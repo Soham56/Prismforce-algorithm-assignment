@@ -16,15 +16,15 @@ bool findCanAbhimanyuWin(int currentEnemy, int currentPower, int noOfTimesCanRec
         return cachedPossibilityOfAbhimanyuVictory[currentEnemy][currentPower][noOfTimesCanRecharge][isBoonAvailable][isThirdEnemySkipped][isSeventhEnemySkipped];
     }
 
+    bool canAbhimanyuWin = false;
+
     // If the current enemy's power is greater than his maximum power, he must apply the boon to skip the battle; otherwise, he will be defeated.
     if (enemyPowers[currentEnemy] > initialPower)
     {
         if (isBoonAvailable)
-            return cachedPossibilityOfAbhimanyuVictory[currentEnemy][currentPower][noOfTimesCanRecharge][isBoonAvailable][isThirdEnemySkipped][isSeventhEnemySkipped] = findCanAbhimanyuWin(currentEnemy + 1, currentPower, noOfTimesCanRecharge, false, currentEnemy == 3, currentEnemy == 7, numberOfEnemies, initialPower, enemyPowers, cachedPossibilityOfAbhimanyuVictory);
-        return cachedPossibilityOfAbhimanyuVictory[currentEnemy][currentPower][noOfTimesCanRecharge][isBoonAvailable][isThirdEnemySkipped][isSeventhEnemySkipped] = false;
+            canAbhimanyuWin |= findCanAbhimanyuWin(currentEnemy + 1, currentPower, noOfTimesCanRecharge, false, currentEnemy == 3, currentEnemy == 7, numberOfEnemies, initialPower, enemyPowers, cachedPossibilityOfAbhimanyuVictory);
+        return cachedPossibilityOfAbhimanyuVictory[currentEnemy][currentPower][noOfTimesCanRecharge][isBoonAvailable][isThirdEnemySkipped][isSeventhEnemySkipped] = canAbhimanyuWin;
     }
-
-    bool canAbhimanyuWin = false;
 
     // According to rule no. 5, if the 3rd and 7th enemies are defeated, they can regenerate their power to half of their initial power (using floor division) and attack from behind.
     // Therefore, the power of the 4th and 8th enemies is increased by half of the power of the 3rd and 7th, respectively.
@@ -44,9 +44,9 @@ bool findCanAbhimanyuWin(int currentEnemy, int currentPower, int noOfTimesCanRec
     }
 
     // If the current enemy's power is less than his maximum power but greater than his current power, then there is a choice: he can either apply the boon or recharge his power to his initial maximum power.
-    if (noOfTimesCanRecharge)
+    if (noOfTimesCanRecharge && initialPower >= enemyPowers[currentEnemy])
     {
-        canAbhimanyuWin |= findCanAbhimanyuWin(currentEnemy + 1, initialPower - enemyPowers[currentEnemy], noOfTimesCanRecharge, isBoonAvailable, isThirdEnemySkipped, isSeventhEnemySkipped, numberOfEnemies, initialPower, enemyPowers, cachedPossibilityOfAbhimanyuVictory);
+        canAbhimanyuWin |= findCanAbhimanyuWin(currentEnemy + 1, initialPower - enemyPowers[currentEnemy], noOfTimesCanRecharge - 1, isBoonAvailable, isThirdEnemySkipped, isSeventhEnemySkipped, numberOfEnemies, initialPower, enemyPowers, cachedPossibilityOfAbhimanyuVictory);
     }
 
     if (isBoonAvailable)
