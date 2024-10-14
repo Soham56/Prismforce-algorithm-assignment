@@ -1,7 +1,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-bool findCanAbhimanyuWin(int currentEnemy, int numberOfEnemies, vector<int> &enemyPowers, int initialPower, int currentPower, int noOfTimesCanRecharge, int isBoonAvailable, vector<vector<vector<vector<int>>>> &cachedPossibilityOfAbhimanyuVictory)
+bool findCanAbhimanyuWin(int currentEnemy, int currentPower, int noOfTimesCanRecharge, bool isBoonAvailable, bool isThirdEnemySkipped, bool isSeventhEnemySkipped, int numberOfEnemies, int initialPower, vector<int> &enemyPowers, vector<vector<vector<vector<vector<vector<int>>>>>> &cachedPossibilityOfAbhimanyuVictory)
 {
     // abhimanyu has passed all enemy circles successfully, so he has won
     if (currentEnemy > numberOfEnemies)
@@ -9,37 +9,59 @@ bool findCanAbhimanyuWin(int currentEnemy, int numberOfEnemies, vector<int> &ene
         return true;
     }
 
-    // checking is that wining possibility already processed before, with given values of currentEnemy, currentPower, noOfTimesCanRecharge, isBoonAvailable
-    // in this way reducing the overhead of further duplicate recurrence tree
-    if (cachedPossibilityOfAbhimanyuVictory[currentEnemy][currentPower][noOfTimesCanRecharge][isBoonAvailable] != -1)
+    // Checking if the winning possibility has already been processed with the given values of currentEnemy, currentPower, noOfTimesCanRecharge, isBoonAvailable, isThirdEnemySkipped, isSeventhEnemySkipped.
+    // This helps reduce the overhead of further duplicate recurrence trees.
+    if (cachedPossibilityOfAbhimanyuVictory[currentEnemy][currentPower][noOfTimesCanRecharge][isBoonAvailable][isThirdEnemySkipped][isSeventhEnemySkipped] != -1)
     {
-        return cachedPossibilityOfAbhimanyuVictory[currentEnemy][currentPower][noOfTimesCanRecharge][isBoonAvailable];
+        return cachedPossibilityOfAbhimanyuVictory[currentEnemy][currentPower][noOfTimesCanRecharge][isBoonAvailable][isThirdEnemySkipped][isSeventhEnemySkipped];
     }
 
-    // if the current enemy power is more that his maximum power , then he must apply the boon to skip the battle otherwise he will be defeated
+    // If the current enemy's power is greater than his maximum power, he must apply the boon to skip the battle; otherwise, he will be defeated.
     if (enemyPowers[currentEnemy] > initialPower)
     {
         if (isBoonAvailable)
-            return cachedPossibilityOfAbhimanyuVictory[currentEnemy][currentPower][noOfTimesCanRecharge][isBoonAvailable] = findCanAbhimanyuWin(currentEnemy + 1, numberOfEnemies, enemyPowers, initialPower, currentPower, noOfTimesCanRecharge, false, cachedPossibilityOfAbhimanyuVictory);
-        return cachedPossibilityOfAbhimanyuVictory[currentEnemy][currentPower][noOfTimesCanRecharge][isBoonAvailable] = false;
+            return cachedPossibilityOfAbhimanyuVictory[currentEnemy][currentPower][noOfTimesCanRecharge][isBoonAvailable][isThirdEnemySkipped][isSeventhEnemySkipped] = findCanAbhimanyuWin(currentEnemy + 1, currentPower, noOfTimesCanRecharge, false, currentEnemy == 3, currentEnemy == 7, numberOfEnemies, initialPower, enemyPowers, cachedPossibilityOfAbhimanyuVictory);
+        return cachedPossibilityOfAbhimanyuVictory[currentEnemy][currentPower][noOfTimesCanRecharge][isBoonAvailable][isThirdEnemySkipped][isSeventhEnemySkipped] = false;
     }
 
     bool canAbhimanyuWin = false;
 
-    // if with the current power he can defeat the current enemy then there is a choice to defeat the enemy and process further and his current power will be decreased by the current enemy power ( refered 3rd rule )
+    // According to rule no. 5, if the 3rd and 7th enemies are defeated, they can regenerate their power to half of their initial power (using floor division) and attack from behind.
+    // Therefore, the power of the 4th and 8th enemies is increased by half of the power of the 3rd and 7th, respectively.
+    // *Assumed that if they are skipped, they will no longer attack from behind.
+
+    if (currentEnemy == 4 && !isThirdEnemySkipped)
+        enemyPowers[currentEnemy] += (enemyPowers[currentEnemy - 1] / 2);
+
+    if (currentEnemy == 8 && !isSeventhEnemySkipped)
+        enemyPowers[currentEnemy] += (enemyPowers[currentEnemy - 1] / 2);
+
+    // If, with the current power, he can defeat the current enemy, there is a choice to defeat the enemy and proceed further.
+    // His current power will be decreased by the current enemy's power (as per rule no. 3).
     if (enemyPowers[currentEnemy] <= currentPower)
     {
-        canAbhimanyuWin |= cachedPossibilityOfAbhimanyuVictory[currentEnemy][currentPower][noOfTimesCanRecharge][isBoonAvailable] = findCanAbhimanyuWin(currentEnemy + 1, numberOfEnemies, enemyPowers, initialPower, currentPower - enemyPowers[currentEnemy], noOfTimesCanRecharge, isBoonAvailable, cachedPossibilityOfAbhimanyuVictory);
+        canAbhimanyuWin |= findCanAbhimanyuWin(currentEnemy + 1, currentPower - enemyPowers[currentEnemy], noOfTimesCanRecharge, isBoonAvailable, isThirdEnemySkipped, isSeventhEnemySkipped, numberOfEnemies, initialPower, enemyPowers, cachedPossibilityOfAbhimanyuVictory);
     }
 
-    // if the current enemy power is less than his maxmimum power but more than his current power , then there is a choice of either he can apply the boon or he can recharge his power with his initial maximum power
+    // If the current enemy's power is less than his maximum power but greater than his current power, then there is a choice: he can either apply the boon or recharge his power to his initial maximum power.
     if (noOfTimesCanRecharge)
-        canAbhimanyuWin |= cachedPossibilityOfAbhimanyuVictory[currentEnemy][currentPower][noOfTimesCanRecharge][isBoonAvailable] = findCanAbhimanyuWin(currentEnemy + 1, numberOfEnemies, enemyPowers, initialPower, initialPower - enemyPowers[currentEnemy], noOfTimesCanRecharge - 1, isBoonAvailable, cachedPossibilityOfAbhimanyuVictory);
+    {
+        canAbhimanyuWin |= findCanAbhimanyuWin(currentEnemy + 1, initialPower - enemyPowers[currentEnemy], noOfTimesCanRecharge, isBoonAvailable, isThirdEnemySkipped, isSeventhEnemySkipped, numberOfEnemies, initialPower, enemyPowers, cachedPossibilityOfAbhimanyuVictory);
+    }
 
     if (isBoonAvailable)
-        canAbhimanyuWin |= cachedPossibilityOfAbhimanyuVictory[currentEnemy][currentPower][noOfTimesCanRecharge][isBoonAvailable] = findCanAbhimanyuWin(currentEnemy + 1, numberOfEnemies, enemyPowers, initialPower, currentPower, noOfTimesCanRecharge, false, cachedPossibilityOfAbhimanyuVictory);
+    {
+        canAbhimanyuWin |= findCanAbhimanyuWin(currentEnemy + 1, currentPower, noOfTimesCanRecharge, false, currentEnemy == 3, currentEnemy == 7, numberOfEnemies, initialPower, enemyPowers, cachedPossibilityOfAbhimanyuVictory);
+    }
 
-    return cachedPossibilityOfAbhimanyuVictory[currentEnemy][currentPower][noOfTimesCanRecharge][isBoonAvailable] = canAbhimanyuWin;
+    // Revert the changes applied to the 4th and 8th enemies after processing with the current enemy is complete.
+    if (currentEnemy == 4 && !isThirdEnemySkipped)
+        enemyPowers[currentEnemy] -= (enemyPowers[currentEnemy - 1] / 2);
+
+    if (currentEnemy == 8 && !isSeventhEnemySkipped)
+        enemyPowers[currentEnemy] -= (enemyPowers[currentEnemy - 1] / 2);
+
+    return cachedPossibilityOfAbhimanyuVictory[currentEnemy][currentPower][noOfTimesCanRecharge][isBoonAvailable][isThirdEnemySkipped][isSeventhEnemySkipped] = canAbhimanyuWin;
 }
 
 bool canAbhimanyuAbleToGetBackToPandavas()
@@ -52,21 +74,15 @@ bool canAbhimanyuAbleToGetBackToPandavas()
         cin >> enemyPowers[i];
     }
 
-    /**
-     * for enemy circle 3 and 7 , after killed they can regenerate again and attack with half power ( assumed floor division ), and attach from behind while combatting with enemy circle 4 and 8 respectively,
-     * so abhimanyu has to fight total of enemyPower[4] + (enemyPower[3]/2) at circle 4
-     * and enemyPower[8] + (enemyPower[7]/2) at circle 8
+    // A 6-dimensional cache array to store the possibility of Abhimanyu's victory, which reduces the duplicated recurrence tree.
+    vector<vector<vector<vector<vector<vector<int>>>>>> cachedPossibilityOfAbhimanyuVictory(
+        n + 2, vector<vector<vector<vector<vector<int>>>>>(
+                   initialPower + 2, vector<vector<vector<vector<int>>>>(
+                                         noOfTimesCanRecharge + 2, vector<vector<vector<int>>>(
+                                                                       2, vector<vector<int>>(
+                                                                              2, vector<int>(2, -1))))));
 
-     * - refered 5th rule
-     */
-    enemyPowers[4] += (enemyPowers[3] / 2);
-
-    enemyPowers[8] += (enemyPowers[7] / 2);
-
-    // a 4-dimentional cache array, to store if the possibility of abhimanyu's victory , which reduce the duplicated recurrence tree
-    vector<vector<vector<vector<int>>>> cachedPossibilityOfAbhimanyuVictoryOfAbhimanyuVictory(n + 2, vector<vector<vector<int>>>(initialPower + 2, vector<vector<int>>(noOfTimesCanRecharge + 2, vector<int>(2, -1))));
-
-    return findCanAbhimanyuWin(1, n, enemyPowers, initialPower, initialPower, noOfTimesCanRecharge, true, cachedPossibilityOfAbhimanyuVictoryOfAbhimanyuVictory);
+    return findCanAbhimanyuWin(1, initialPower, noOfTimesCanRecharge, true, false, false, n, initialPower, enemyPowers, cachedPossibilityOfAbhimanyuVictory);
 }
 
 /************** Test-case Region **************/
