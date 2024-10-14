@@ -66,23 +66,23 @@ bool findCanAbhimanyuWin(int currentEnemy, int currentPower, int noOfTimesCanRec
 
 bool canAbhimanyuAbleToGetBackToPandavas()
 {
-    int n = 11, initialPower, noOfTimesCanRecharge;
+    int noOfEnemies = 11, initialPower, noOfTimesCanRecharge;
     cin >> initialPower >> noOfTimesCanRecharge;
-    vector<int> enemyPowers(n + 1);
-    for (int i = 1; i <= n; i++)
+    vector<int> enemyPowers(noOfEnemies + 1);
+    for (int i = 1; i <= noOfEnemies; i++)
     {
         cin >> enemyPowers[i];
     }
 
     // A 6-dimensional cache array to store the possibility of Abhimanyu's victory, which reduces the duplicated recurrence tree.
     vector<vector<vector<vector<vector<vector<int>>>>>> cachedPossibilityOfAbhimanyuVictory(
-        n + 2, vector<vector<vector<vector<vector<int>>>>>(
-                   initialPower + 2, vector<vector<vector<vector<int>>>>(
-                                         noOfTimesCanRecharge + 2, vector<vector<vector<int>>>(
-                                                                       2, vector<vector<int>>(
-                                                                              2, vector<int>(2, -1))))));
+        noOfEnemies + 2, vector<vector<vector<vector<vector<int>>>>>(
+                             initialPower + 2, vector<vector<vector<vector<int>>>>(
+                                                   noOfTimesCanRecharge + 2, vector<vector<vector<int>>>(
+                                                                                 2, vector<vector<int>>(
+                                                                                        2, vector<int>(2, -1))))));
 
-    return findCanAbhimanyuWin(1, initialPower, noOfTimesCanRecharge, true, false, false, n, initialPower, enemyPowers, cachedPossibilityOfAbhimanyuVictory);
+    return findCanAbhimanyuWin(1, initialPower, noOfTimesCanRecharge, true, false, false, noOfEnemies, initialPower, enemyPowers, cachedPossibilityOfAbhimanyuVictory);
 }
 
 /************** Test-case Region **************/
