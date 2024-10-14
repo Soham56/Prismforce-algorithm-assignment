@@ -2,7 +2,7 @@
 
 ## Solution Approach
 
--   For a detailed explanation of the solution approach and its time complexity, please refer to the [reference link](https://github.com/Soham56/Prismforce-algorithm-assignment/blob/main/Solution%20Approach.docx).
+-   For a detailed explanation of the solution approach and its time complexity, please refer to the [reference link](https://github.com/Soham56/Prismforce-algorithm-assignment/blob/main/Solution%20Approach.pdf).
 
 ## Input Parameters
 
