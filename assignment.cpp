@@ -67,7 +67,13 @@ bool findCanAbhimanyuWin(int currentEnemy, int currentPower, int noOfTimesCanRec
 bool canAbhimanyuAbleToGetBackToPandavas()
 {
     int noOfEnemies = 11, initialPower, noOfTimesCanRecharge;
-    cin >> initialPower >> noOfTimesCanRecharge;
+    cout << "initial power of Abhimanyu (p): ";
+    cin >> initialPower;
+
+    cout << "no of times Abhimanyu can recharge his power ( b ): ";
+    cin >> noOfTimesCanRecharge;
+
+    cout << "Please provide each power of all 11 enemies: \n";
     vector<int> enemyPowers(noOfEnemies + 1);
     for (int i = 1; i <= noOfEnemies; i++)
     {
@@ -90,20 +96,19 @@ bool canAbhimanyuAbleToGetBackToPandavas()
 int main()
 {
 
-    int test_case = 2;
-    test_case++;
+    int noOfTestCase = 2;
 
-    while (test_case > 1)
+    for (int testCase = 1; testCase <= noOfTestCase; testCase++)
     {
 
-        test_case--;
+        cout << "\n#Test Case: " << testCase << '\n';
         if (canAbhimanyuAbleToGetBackToPandavas())
         {
-            cout << "Yes, Abhimanyu will be able to get back to Pandavas !\n";
+            cout << "\nYes, Abhimanyu will be able to get back to Pandavas !\n";
         }
         else
         {
-            cout << "No, Abhimanyu will not be able to get back to Pandavas !\n";
+            cout << "\nNo, Abhimanyu will not be able to get back to Pandavas !\n";
         }
     }
 

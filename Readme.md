@@ -15,9 +15,10 @@
 ### Input
 
 ```plaintext
-initial power (p) = 10
-number of times can recharge (b) = 1
-array of enemy powers (k) = [3, 1, 9, 2, 1, 1, 1, 1, 2, 1, 1]
+initial power of Abhimanyu (p): 10
+no of times Abhimanyu can recharge his power ( b ): 1
+Please provide each power of all 11 enemies:
+3 1 9 1 1 1 1 1 2 1 1
 ```
 
 ### Output
