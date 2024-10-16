@@ -68,4 +68,4 @@ No, Abhimanyu will not be able to get back to Pandavas!
 
 **Explanation:**
 
--   In this test case, Abhimanyu starts with an initial power of 9 and no matter what choice he has taken, there is no way Abhimanyu get back to Pandavas!
+-   In this test case, Abhimanyu starts with an initial power of 9, and no matter what choices he makes, there is no way for Abhimanyu to get back to the Pandavas.
